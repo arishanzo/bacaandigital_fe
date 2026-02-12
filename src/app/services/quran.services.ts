@@ -1,15 +1,18 @@
 
 import { fetchAPI } from "../lib/api"
-import {ayatDetail, Surah, tafsir, TafsirDetail } from "../types"
+import {ayatDetail, Surah, TafsirDetail } from "../types"
 
 export const getAllSurah = async (): Promise<Surah[]> => {
-    return await fetchAPI<Surah[]>("/surahs");
+    const response = await fetchAPI<{data: Surah[]}>("/surahs");
+    return response.data;
 }
 
-export const getBySurah = async(nomor: number): Promise<ayatDetail[]> => {
-    return await fetchAPI<ayatDetail[]>(`/surah/${nomor}`);
+export const getBySurah = async(nomor: number): Promise<ayatDetail> => {
+    const response = await fetchAPI<{data: ayatDetail}>(`/surah/${nomor}`);
+    return response.data;
 }
 
 export const getTafsir = async(nomor: number): Promise<TafsirDetail[]> => {
-    return await fetchAPI<TafsirDetail[]>(`/surah/${nomor}/tafsir`)
+    const respone = await fetchAPI<{data: TafsirDetail[]}>(`/surah/${nomor}/tafsir`)
+    return respone.data;
 }

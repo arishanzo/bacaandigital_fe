@@ -7,52 +7,47 @@ export interface ApiResponse<T> {
 export interface Surah {
  nomor: number;
  nama: string;
- nama_latin: string;
- jumlah_ayat: number;
- tempat_turun: "mekah" | "madinah";
+ namaLatin: string;
+ jumlahAyat: number;
+ tempatTurun: "mekah" | "madinah";
  arti: string;
  deksripsi: string;
- audio: string;
+ audioFull: string;
 }
 
-export interface tafsir {
+export interface TafsirDetail {
+   nomor: number;
+ nama: string;
+ namaLatin: string;
+ jumlahAyat: number;
+ tempatTurun: "mekah" | "madinah";
+ arti: string;
+ deksripsi: string;
+ audioFull: string;
+  tafsir: {
     _id: number;
     surah: string;
     ayat: number;
     tafsir: string;
-}
-
-export interface TafsirDetail {
-  status: boolean;
-  nomor: number;
-  nama: string;
-  nama_latin: string;
-  jumlah_ayat: number;
-  tempat_turun: string;
-  arti: string;
-  deskripsi: string;
-  audio: string;
-  tafsir: tafsir[]; // di sini type Tafsir dipakai
+  }
 };
 
 
 
 export interface ayatDetail {
-nomor: number;
+ nomor: number;
  nama: string;
- nama_latin: string;
- jumlah_ayat: number;
- tempat_turun: "mekah" | "madinah";
+ namaLatin: string;
+ jumlahAyat: number;
+ tempatTurun: "mekah" | "madinah";
  arti: string;
  deksripsi: string;
- audio: string;
- status: boolean;
+ audioFull: string;
  ayat: {
-  _id: number;
-    surah: string;
-    nomor: number;
-    ar: string;
-    tr: string;
-    idn: string;
+  nomorAyat: number;
+    teksArab: string;
+    teksLatin: string;
+    teksIndonesia: string;
+    audio: string;
  }[];
 }

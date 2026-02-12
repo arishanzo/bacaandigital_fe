@@ -1,9 +1,8 @@
 import Image from "next/image";
-import QuranIndex from "./page/quran";
-import "./globals.css"
+import QuranIndex from "./quranlist/page";
 
 export default function Home() {
   return (
-      <QuranIndex />
+      < QuranIndex />
   );
 }
