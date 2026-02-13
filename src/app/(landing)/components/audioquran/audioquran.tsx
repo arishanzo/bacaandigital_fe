@@ -1,7 +1,13 @@
 'use client';
 import { useState } from 'react';
 
-const AudioQuran = () => {
+interface AudioQuranProps {
+  progress: number;
+  audioRef: React.RefObject<HTMLAudioElement>;
+  audioName: string;
+  surah: string;
+}
+const AudioQuran = ( {progress, audioRef, audioName, surah}: AudioQuranProps ) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(180); // 3 menit contoh
@@ -12,7 +18,8 @@ const AudioQuran = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const progress = (currentTime / duration) * 100;
+  const names = audioName.split('/');
+  const qariName = names[names.length - 2].replace(/-/g, ' ');
 
   return (
     <div className="max-w-7xl mx-auto mb-8">
@@ -25,8 +32,8 @@ const AudioQuran = () => {
             </svg>
           </div>
           <div className="flex-1">
-            <h3 className="font-bold text-gray-900 text-lg">Al-Fatihah</h3>
-            <p className="text-gray-500 text-sm">Syekh Mishari Rashid Alafasy</p>
+            <h3 className="font-bold text-gray-900 text-lg">{surah}</h3>
+            <p className="text-gray-500 text-sm">Syech {qariName}</p>
           </div>
         </div>
 
@@ -40,9 +47,10 @@ const AudioQuran = () => {
               <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition"></div>
             </div>
           </div>
+          
           <div className="flex justify-between text-xs text-gray-500 mt-2">
-            <span>{formatTime(currentTime)}</span>
-            <span>{formatTime(duration)}</span>
+            <span>{formatTime(audioRef.current?.currentTime || 0)}</span>
+            <span>{formatTime(audioRef.current?.duration || 0)}</span>
           </div>
         </div>
 
@@ -76,6 +84,8 @@ const AudioQuran = () => {
           </button>
         </div>
       </div>
+
+      
     </div>
   );
 };
