@@ -54,35 +54,7 @@ const AudioQuran = ( {progress, audioRef, audioName, surah}: AudioQuranProps ) =
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center justify-center gap-4">
-          <button className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-emerald-600 transition">
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-            </svg>
-          </button>
-          
-          <button 
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="w-14 h-14 flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-full hover:shadow-lg transition"
-          >
-            {isPlaying ? (
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-              </svg>
-            ) : (
-              <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-            )}
-          </button>
-
-          <button className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-emerald-600 transition">
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-            </svg>
-          </button>
-        </div>
+    
       </div>
 
       
