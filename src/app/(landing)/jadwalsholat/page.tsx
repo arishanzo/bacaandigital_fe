@@ -1,0 +1,343 @@
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Header } from '../layouts/header';
+import MenuHeader from '../components/menuheader/menuheader';
+import { FormDataSholat, jadwalSholat } from '@/app/types';
+import { getProvinsi, postJadwalSholat, postKabKota } from '@/app/services/jadwalshoat.services';
+
+const JadwalSholatPage = () => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedCity, setSelectedCity] = useState('Kab. Lamongan');
+  const [selectedProvince, setSelectedProvince] = useState('Jawa Timur');
+  const [notifEnabled, setNotifEnabled] = useState(false);
+
+  const[getJadwalSholat, setGetJadwalSholat] =useState<jadwalSholat | null>(null);
+  const[Provinsi, setProvinsi] =useState<any | null>(null);
+  const [getkab, setGetKab] = useState<string[]>([]);
+
+  const [formDataSholat, setFormDataSholat] = useState<FormDataSholat>({
+    provinsi: selectedProvince, 
+            kabkota:  selectedCity, 
+            bulan: currentDate.getMonth() + 1, 
+            tahun: currentDate.getFullYear()
+});
+
+
+  const[disabled, setDisabled] = useState(true);
+
+  useEffect(() => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=id`,
+              {
+                headers: {
+                  'User-Agent': 'JadwalSholatApp/1.0'
+                }
+              }
+            );
+            if (!response.ok) throw new Error('API Error');
+            const data = await response.json();
+            const city = data.address.city || data.address.county || data.address.town || data.address.village;
+            const province = data.address.state;
+            if (city) setSelectedCity(city);
+            if (province) setSelectedProvince(province);
+           
+          } catch (error) {
+            console.log('Gagal mendapatkan nama lokasi:', error);
+          }
+        },
+        (error) => {
+          console.log('Gagal mendapatkan lokasi:', error.message);
+        }
+      );
+    }
+  }, []);
+
+    useEffect(() => {
+    
+       
+
+          const fetchJadwalSholat = async () => {
+              try {
+                  const data = await postJadwalSholat(formDataSholat);
+                  setGetJadwalSholat(data);
+               } catch (error){
+                 console.error("Error fetching surahs:", error);
+              }
+          };
+
+        const fetchGetProvinsi = async () => {
+             try {
+                  const data = await getProvinsi();
+                  setProvinsi(data)
+               } catch (error){
+                 console.error("Error fetching surahs:", error);
+              }
+        }
+
+        const fetchKab = async () => {
+              try {
+                  const data = await postKabKota(selectedProvince);
+                  setGetKab(data);
+               } catch (error){
+                 console.error("Error fetching surahs:", error);
+              }
+          };
+
+          
+        fetchKab();
+        fetchGetProvinsi();
+        fetchJadwalSholat();
+    }, []);
+
+
+  const handleShare = () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({ title: 'Jadwal Sholat', url });
+    } else {
+      navigator.clipboard.writeText(url);
+      alert('Link berhasil disalin!');
+    }
+  };
+
+  const handleNotification = () => {
+    if ('Notification' in window) {
+      if (Notification.permission === 'granted') {
+        setNotifEnabled(!notifEnabled);
+        alert(notifEnabled ? 'Notifikasi dinonaktifkan' : 'Notifikasi diaktifkan');
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            setNotifEnabled(true);
+            alert('Notifikasi diaktifkan');
+          }
+        });
+      }
+    }
+  };
+
+const handleKab = async (value: string) => {
+  const newFormData = {
+    provinsi: selectedProvince,
+    kabkota: value, 
+    bulan: currentDate.getMonth() + 1,
+    tahun: currentDate.getFullYear(),
+  };
+
+  setFormDataSholat(newFormData);
+
+   try {
+    const data = await postJadwalSholat(formDataSholat);
+    setGetJadwalSholat(data); 
+    setSelectedCity(value);
+    setDisabled(false);
+  } catch (error) {
+    console.error("Error fetching kab/kota:", error);
+    setDisabled(true);
+  }
+};
+
+const handleProvinsi = async (value: string) => {
+  try {
+    const data = await postKabKota(value);
+    setGetKab(data); // pastikan data berupa array
+    setSelectedProvince(value);
+    setDisabled(false);
+  } catch (error) {
+    console.error("Error fetching kab/kota:", error);
+    setDisabled(true);
+  }
+};
+
+
+
+  const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  
+
+  const curentJadwalSholat = getJadwalSholat?.jadwal.filter(item => new Date(item.tanggal_lengkap).getDate() === currentDate.getDate());
+     const savedAyatObj = Array.isArray(curentJadwalSholat) ? curentJadwalSholat[curentJadwalSholat.length - 1] : curentJadwalSholat;
+
+
+  return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-50">
+         <Header />
+   
+         <div className="max-w-7xl justify-center mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <MenuHeader />
+          
+
+        {/* Header Section */}
+        <div className="relative bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-8 shadow-xl overflow-hidden mb-8">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
+          <div className="relative text-center text-white">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L10 6H14L12 2M6 6C6 7.11 5.11 8 4 8V18H2V20H22V18H20V8C18.9 8 18 7.11 18 6L15 6.5V8H9V6.5L6 6M6 8H8V18H6V8M10 8H14V18H10V8M16 8H18V18H16V8Z"/>
+              </svg>
+              <h1 className="md:text-5xl text-3xl font-bold">Jadwal Sholat</h1>
+            </div>
+            <p className="text-emerald-50 md:text-lg text-sm  mb-8">
+              {months[currentDate.getMonth()]} {currentDate.getFullYear()} • {selectedCity}, {selectedProvince}
+            </p>
+            <div className="flex gap-2 justify-center">
+              <button 
+                onClick={handleNotification}
+                className="bg-white/20 backdrop-blur-lg rounded-xl px-6 py-2 hover:bg-white/30 transition-all inline-flex items-center gap-2 border border-white/30"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <span className="md:text-sm  text-xs font-semibold">{notifEnabled ? 'Aktif' : 'Notifikasi'}</span>
+              </button>
+              <button 
+                onClick={handleShare}
+                className="bg-white/20 backdrop-blur-lg rounded-xl px-6 py-2 hover:bg-white/30 transition-all inline-flex items-center gap-2 border border-white/30"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                <span className="md:text-sm  text-xs font-semibold">Bagikan</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+           {/* Today's Prayer Times Card */}
+            <div className="bg-white rounded-2xl justify-center items-center shadow-lg p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <svg className="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L10 6H14L12 2M6 6C6 7.11 5.11 8 4 8V18H2V20H22V18H20V8C18.9 8 18 7.11 18 6L15 6.5V8H9V6.5L6 6M6 8H8V18H6V8M10 8H14V18H10V8M16 8H18V18H16V8Z"/>
+            </svg>
+            Waktu Sholat Hari Ini
+          </h2>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { name: 'Subuh', time: savedAyatObj?.subuh, icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' },
+               { name: 'Dhuha', time: savedAyatObj?.dhuha, icon: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
+              { name: 'Dzuhur', time: savedAyatObj?.dzuhur, icon: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
+              { name: 'Ashar', time: savedAyatObj?.ashar, icon: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
+              { name: 'Maghrib', time: savedAyatObj?.maghrib, icon: 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' },
+              { name: 'Isya', time: savedAyatObj?.isya, icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' }
+            ].map((prayer, idx) => (
+              <div key={idx} className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl md:p-4 p-2 text-center hover:shadow-md transition-shadow">
+                <svg className="md:w-8 md:h-8 w-5 h-5 mx-auto mb-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={prayer.icon} />
+                </svg>
+                <div className="text-sm font-semibold text-gray-600 mb-1">{prayer.name}</div>
+                <div className="md:text-2xl text-md font-bold text-emerald-600">{prayer.time}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
+        {/* Filter Section */}
+        <div className="bg-gradient-to-br from-white to-emerald-50/30 rounded-2xl shadow-lg p-6 mb-8 border border-emerald-100">
+          <div className="flex items-center gap-2 mb-4">
+            <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <h3 className="text-lg font-bold text-gray-800">Pilih Lokasi Lain</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative">
+              <label className="block text-xs font-semibold text-emerald-600 mb-2 uppercase tracking-wide">Provinsi</label>
+              <div className="relative">
+                <select 
+                  value={selectedProvince}
+                  onChange={(e) => handleProvinsi(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none transition-all appearance-none cursor-pointer hover:border-emerald-300"
+                >
+                    
+                   <option value='' disabled>-- Pilih Provinsi --</option>
+                    {Provinsi?.map((item: any, idx: number) => (
+                         <option key={idx}>{item}</option>
+                    ) )}
+                 
+                </select>
+                <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+            <div className="relative">
+              <label className="block text-xs font-semibold text-emerald-600 mb-2 uppercase tracking-wide">Kota</label>
+              <div className="relative">
+                <select 
+                  value={selectedCity}
+                  disabled={disabled}
+                  onChange={(e) =>  handleKab(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none transition-all appearance-none cursor-pointer hover:border-emerald-300"
+                >
+                   <option value='' disabled>-- Pilih Kabupaten / Kota --</option>
+                {getkab?.map((item: any, idx: number) => (
+                      <option key={idx}>{item}</option>
+                ))}
+                 
+                </select>
+                <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Table Section */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="overflow-x-scroll scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white">
+                  <th className="px-6 py-4 text-left font-semibold">Tanggal</th>
+                  <th className="px-6 py-4 text-center font-semibold">Subuh</th>
+                  <th className="px-6 py-4 text-center font-semibold">Dhuha</th>
+                  <th className="px-6 py-4 text-center font-semibold">Dzuhur</th>
+                  <th className="px-6 py-4 text-center font-semibold">Ashar</th>
+                  <th className="px-6 py-4 text-center font-semibold">Maghrib</th>
+                  <th className="px-6 py-4 text-center font-semibold">Isya</th>
+                </tr>
+              </thead>
+              <tbody>
+                {getJadwalSholat?.jadwal?.map((jadwal, index) => (
+                  <tr 
+                    key={index}
+                    className={`border-b border-gray-100 hover:bg-emerald-50 transition-colors ${
+                     new Date(jadwal.tanggal_lengkap).getDate() === currentDate.getDate() ? 'bg-emerald-100' : ''
+                    }`}
+                  >
+                    <td className="px-6 py-2 text-center font-semibold text-gray-800">
+                      {jadwal.tanggal}
+                    </td>
+                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.subuh}</td>
+                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.dhuha}</td>
+                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.dzuhur}</td>
+                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.ashar}</td>
+                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.maghrib}</td>
+                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.isya}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Info Footer */}
+        <div className="mt-8 text-center text-gray-600">
+          <p className="text-sm">Jadwal sholat dapat berbeda beberapa menit tergantung lokasi Anda</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default JadwalSholatPage;

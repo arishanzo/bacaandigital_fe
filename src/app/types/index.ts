@@ -49,3 +49,32 @@ export interface ayatDetail {
     audio: string;
  }[];
 }
+
+
+
+export interface jadwalSholat {
+
+  bulan: number,
+  bulan_nama: string,
+  jadwal: {
+     tanggal: number,
+    tanggal_lengkap: string,
+    hari: string,
+    imsak: string,
+    subuh: string,
+    terbit: string,
+    dhuha: string,
+    dzuhur: string,
+    ashar: string,
+    maghrib: string,
+    isya: string
+  }[],
+  provinsi: string,
+  kabkota: string,
+  tahun: number,
+};
+
+export interface FormDataSholat {
+ provinsi: string, kabkota: string, bulan: number, tahun: number
+}
+

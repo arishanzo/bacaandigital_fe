@@ -2,7 +2,7 @@ export async function fetchAPI<T>(
   endpoint: string,
   options?: RequestInit,
 ): Promise<T> {
-  const fallbackApiUrl = `http://localhost:5000/api/quran`;
+  const fallbackApiUrl = `http://localhost:5000/api`;
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || fallbackApiUrl;
 const res = await fetch(`${apiUrl}${endpoint}`, { ...options, cache: options?.cache || "no-store", });
 
