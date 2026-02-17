@@ -8,12 +8,18 @@ import AudioQuran from "@/app/(landing)/components/audioquran/audioquran";
 
 
 const SurahPage = () => {
+  
     const verseRefs = useRef<(HTMLDivElement | null)[]>([])
     const audioRef =  React.useRef<HTMLAudioElement | null>(null);
     const { number } = useParams();
     const router = useRouter();
+
+
     const [bySurah, setBySurah] = useState<ayatDetail | null>(null);
     const [displayText, setDisplayText] = useState("");
+
+    const [saveSurah, setSaveSurah] = useState<any | null>(null);
+    const [activeSaveSurah, setActiveSaveSurah] = useState(false);
 
 
     const [cureentIndex, setCurrentIndex] = useState(0);
@@ -42,6 +48,47 @@ const SurahPage = () => {
         setIsPlaying(false);
       }
     };
+
+    const handleSimpanSurat = (e: React.MouseEvent, nomorAyat: number) => {
+      e.preventDefault();
+    
+        const isSaved = saveSurah?.nomorSurah === bySurah?.nomor && saveSurah?.nomorAyat === nomorAyat;
+
+      if (isSaved) {
+        setActiveSaveSurah(false);
+        setSaveSurah(null);
+        alert('Ayat telah dihapus dari simpanan!');
+        localStorage.removeItem('savedAyat');
+      } else {
+
+      const savedAyat = localStorage.getItem('savedAyat');
+      
+      const savedAyatArray = savedAyat ? JSON.parse(savedAyat) : [];
+
+      const ayatToSave = {
+        nomorSurah: bySurah?.nomor,
+        namaSurah: bySurah?.namaLatin,
+        nomorAyat: nomorAyat,
+      };
+
+      savedAyatArray.push(ayatToSave);
+      setSaveSurah(ayatToSave);
+      localStorage.setItem('savedAyat', JSON.stringify(savedAyatArray));
+      alert(`Ayat ${nomorAyat} dari Surah ${bySurah?.namaLatin} telah disimpan!`);
+      setActiveSaveSurah(true);
+    }
+   }
+
+    const handleGoToAyat = (nomorAyat: number) => {
+      if(bySurah?.namaLatin === saveSurah.namaSurah) {
+        const target = document.getElementById(`ayat-${nomorAyat}`);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' , block: 'center'});
+        }
+      } else {
+        router.push(`/quranlist/surahquran/${saveSurah.nomorSurah}#ayat-${nomorAyat}`);
+      }
+   };
 
     
   useEffect(() => {
@@ -105,8 +152,36 @@ const SurahPage = () => {
             }
         };
 
-        fetchSurah();
+      const savedFavorites = localStorage.getItem('savedAyat');
+      if (savedFavorites) {
+        try {
+          const parsed = JSON.parse(savedFavorites);
+          const savedAyatObj = Array.isArray(parsed) ? parsed[parsed.length - 1] : parsed;
+          setSaveSurah(savedAyatObj);
+
+          setActiveSaveSurah(true);
+          
+
+        } catch (error) {
+          console.error("Error parsing savedAyat:", error);
+        }
+      }
+
+      fetchSurah();
   }, [number]);
+
+
+  useEffect(() => {
+    if (bySurah && window.location.hash) {
+      const hash = window.location.hash.substring(1);
+      setTimeout(() => {
+        const target = document.getElementById(hash);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+  }, [bySurah]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-50">
@@ -161,13 +236,15 @@ const SurahPage = () => {
 
           {/* Ayat List */}
           {bySurah?.ayat?.map((ayatItem) => (
-            <div key={ayatItem.nomorAyat}
+            <div 
+            id={`ayat-${ayatItem.nomorAyat}`}
+            key={ayatItem.nomorAyat}
               ref={(el) => {
                 verseRefs.current[ayatItem.nomorAyat - 1] = el;
               }}
             
-            className={`bg-white rounded-2xl p-6 shadow-sm ${isPlaying && cureentIndex === ayatItem.nomorAyat - 1 ? 'border-1 border-emerald-300 shadow-xl ' : 'border border-slate-200'
-            } hover:shadow-xl  hover:border-emerald-300 transition-all duration-300 mb-4`}>
+            className={`rounded-2xl p-6 shadow-sm ${isPlaying && cureentIndex === ayatItem.nomorAyat - 1 && 'border-1 border-emerald-300 shadow-xl bg-gray-50'
+            }  ${activeSaveSurah && saveSurah.nomorAyat === ayatItem.nomorAyat && Number(number) === saveSurah.nomorSurah  ? 'border-2 border-emerald-300 shadow-xl bg-gray-50' : 'bg-white border border-slate-200'} hover:shadow-xl  hover:border--300 transition-all duration-300 mb-4`}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <button 
@@ -193,7 +270,13 @@ const SurahPage = () => {
                       </svg>
                     )}
                   </button>
-                  <button className="p-2 border border-slate-300 rounded-md hover:bg-emerald-50 hover:border-emerald-400 transition-colors group">
+                  <button 
+
+                  onClick={(e) => handleSimpanSurat(e, ayatItem.nomorAyat)}
+                  
+                  className={`p-2 
+                  ${activeSaveSurah  && saveSurah.nomorAyat === ayatItem.nomorAyat? 'bg-emerald-50 border-emerald-400 border-1' : 'border border-slate-300'}
+                  rounded-md hover:bg-emerald-50 hover:border-emerald-400 transition-colors group`}>
                     <svg className="w-5 h-5 text-emerald-600 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                     </svg>
@@ -230,9 +313,38 @@ const SurahPage = () => {
                   <AudioQuran progress={progress} audioRef={audioRef as React.RefObject<HTMLAudioElement>} audioName={ayatItem.audio?.['05'] || ''} surah={bySurah.namaLatin}/>
                   </div>
               )}
+
+      { activeSaveSurah && (
+  <div 
+    onClick={() => handleGoToAyat(saveSurah.nomorAyat)} 
+    className="cursor-pointer w-full mt-4 py-2 overflow-hidden border border-emerald-400 rounded-full bg-green-50 flex"
+  >
+    <span 
+      className="p-2 pl-8 text-green-600 font-semibold hover:underline flex items-center gap-2 group"
+    >
+      Lanjutkan Membaca Surah {saveSurah.namaSurah} Ayat ke - {saveSurah.nomorAyat}
+      <svg 
+        className="w-5 h-5 text-emerald-600 group-hover:translate-x-1 transition-transform" 
+        fill="none" 
+        stroke="currentColor" 
+        viewBox="0 0 24 24"
+      >
+        <path 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          strokeWidth={2} 
+          d="M9 5l7 7-7 7" 
+        />
+      </svg>
+    </span>
+  </div>
+)}
+
+
             </div>
 
             
+
           ))}
 
           {bySurah?.ayat && bySurah.ayat.length > 0 && (
@@ -243,6 +355,9 @@ const SurahPage = () => {
               onTimeUpdate={handleTimeUpdate}
             />
           )}
+
+
+                        
         </div>
       ) : (
         <div className="flex justify-center items-center min-h-screen">

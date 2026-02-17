@@ -68,9 +68,7 @@ const QuranIndex = () => {
               <button className="px-6 py-2.5 bg-white text-slate-700 rounded-full font-semibold text-sm border border-slate-200 hover:border-emerald-300 transition">
                 Tafsir
               </button>
-                <button className="px-6 py-2.5 bg-white text-slate-700 rounded-full font-semibold text-sm border border-slate-200 hover:border-emerald-300 transition">
-                Juz
-              </button>
+                
             </div>
           </div>
           
@@ -161,6 +159,9 @@ const QuranIndex = () => {
                   <h2 className="text-xl font-bold text-slate-800 mb-1 group-hover:text-emerald-600 transition-colors">
                     {surah.namaLatin}
                   </h2>
+                   <h4 className="text-sm text-bold text-slate-600 mb-3">
+                    {surah.arti}
+                  </h4>
                   <p className="text-sm text-slate-500 mb-3">
                     {surah.tempatTurun} • {surah.jumlahAyat} Ayat
                   </p>
