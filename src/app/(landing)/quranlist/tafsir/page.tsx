@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllSurah } from "@/app/services/quran.services";
 import { Surah } from "@/app/types";
-import MenuHeader from "../components/menuheader/menuheader";
-import CardHeader from "../components/cardheader/cardheader";
-import { Header } from "../layouts/header";
+import MenuHeader from "../../components/menuheader/menuheader";
+import CardHeader from "../../components/cardheader/cardheader";
+import { Header } from "../../layouts/header";
 
 
 const QuranIndex = () => {
@@ -27,7 +27,7 @@ const QuranIndex = () => {
       }
     };
 
-    const savedFavorites = localStorage.getItem('favoriteSurahs');
+    const savedFavorites = localStorage.getItem('favoriteTafsirSurahs');
     if (savedFavorites) {
       setFavorites(JSON.parse(savedFavorites));
     }
@@ -41,7 +41,7 @@ const QuranIndex = () => {
       ? favorites.filter(id => id !== surahId)
       : [...favorites, surahId];
     setFavorites(newFavorites);
-    localStorage.setItem('favoriteSurahs', JSON.stringify(newFavorites));
+    localStorage.setItem('favoriteTafsirSurahs', JSON.stringify(newFavorites));
    
   };
 
@@ -60,13 +60,13 @@ const QuranIndex = () => {
 
            <div className="flex-1 overflow-x-auto scrollbar-hide">
             <div className="flex py-4 gap-3 min-w-max px-1">
-                <a href="/quranlist" className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full font-semibold text-sm shadow-md transition">
+              <a href="/quranlist" className="px-6 py-2.5 bg-white text-slate-700 rounded-full font-semibold text-sm shadow-md transition">
                 Surah
               </a>
-              <a href="/quranlist/tafsir" className="px-6 py-2.5 bg-white text-slate-700 rounded-full font-semibold text-sm border border-slate-200 hover:border-emerald-300 transition">
+              <a href="/quranlist/tafsir"  className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full font-semibold text-sm border border-slate-200 hover:border-emerald-300 transition">
                 Tafsir
               </a>
-
+                
             </div>
           </div>
           
@@ -97,7 +97,7 @@ const QuranIndex = () => {
             </div>
             <input
               type="text"
-              placeholder="Cari surah..."
+              placeholder="Cari tafsir..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-12 pr-4 py-3.5 bg-white border border-green-400 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent shadow-sm text-slate-700 placeholder-slate-400 transition"
@@ -111,7 +111,7 @@ const QuranIndex = () => {
           <div className="mb-12">
             <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
            
-              Surah Favorit
+              Tafsir Surah Favorit
             </h3>
                <div className="flex-1 overflow-x-scroll scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
             <div className="flex gap-3 min-w-max px-1">
@@ -141,7 +141,7 @@ const QuranIndex = () => {
             ).map((surah) => (
             <Link
               key={surah.nomor}
-              href={`/quranlist/surahquran/${surah.nomor}`}
+              href={`/quranlist/tafsir/tafsirquran/${surah.nomor}`}
               className="group"
             >
               <div className="relative bg-white rounded-2xl p-5 shadow-sm hover:shadow-xl border border-slate-200 hover:border-emerald-300 transition-all duration-300 hover:-translate-y-1">

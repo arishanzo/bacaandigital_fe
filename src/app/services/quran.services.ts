@@ -12,7 +12,7 @@ export const getBySurah = async(nomor: number): Promise<ayatDetail> => {
     return response.data;
 }
 
-export const getTafsir = async(nomor: number): Promise<TafsirDetail[]> => {
-    const respone = await fetchAPI<{data: TafsirDetail[]}>(`/surah/${nomor}/tafsir`)
+export const getTafsir = async(nomor: number): Promise<TafsirDetail> => {
+    const respone = await fetchAPI<{data: TafsirDetail}>(`/surah/tafsir/${nomor}`)
     return respone.data;
 }

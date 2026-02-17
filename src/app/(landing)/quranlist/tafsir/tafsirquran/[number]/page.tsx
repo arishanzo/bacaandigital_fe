@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-import { getBySurah } from "@/app/services/quran.services";
+import { getBySurah, getTafsir } from "@/app/services/quran.services";
 import { ayatDetail } from "@/app/types";
 import AudioQuran from "@/app/(landing)/components/audioquran/audioquran";
 
@@ -16,6 +16,7 @@ const SurahPage = () => {
 
 
     const [bySurah, setBySurah] = useState<ayatDetail | null>(null);
+    const [tafsirData, setTafsirData] = useState<any>(null);
     const [displayText, setDisplayText] = useState("");
 
     const [saveSurah, setSaveSurah] = useState<any | null>(null);
@@ -57,13 +58,13 @@ const SurahPage = () => {
       if (isSaved) {
         setActiveSaveSurah(false);
         setSaveSurah(null);
-        alert('Ayat telah dihapus dari simpanan!');
-        localStorage.removeItem('savedAyat');
+        alert('Tafisr telah dihapus dari simpanan!');
+        localStorage.removeItem('savedTafsir');
       } else {
 
-      const savedAyat = localStorage.getItem('savedAyat');
+      const savedTafsir = localStorage.getItem('savedTafsir');
       
-      const savedAyatArray = savedAyat ? JSON.parse(savedAyat) : [];
+      const savedTafsirArray = savedTafsir ? JSON.parse(savedTafsir) : [];
 
       const ayatToSave = {
         nomorSurah: bySurah?.nomor,
@@ -71,10 +72,10 @@ const SurahPage = () => {
         nomorAyat: nomorAyat,
       };
 
-      savedAyatArray.push(ayatToSave);
+      savedTafsirArray.push(ayatToSave);
       setSaveSurah(ayatToSave);
-      localStorage.setItem('savedAyat', JSON.stringify(savedAyatArray));
-      alert(`Ayat ${nomorAyat} dari Surah ${bySurah?.namaLatin} telah disimpan!`);
+      localStorage.setItem('savedTafsir', JSON.stringify(savedTafsirArray));
+      alert(`Tafsir ${nomorAyat} dari Surah ${bySurah?.namaLatin} telah disimpan!`);
       setActiveSaveSurah(true);
     }
    }
@@ -152,22 +153,32 @@ const SurahPage = () => {
             }
         };
 
-      const savedFavorites = localStorage.getItem('savedAyat');
+           const fetchTafsir = async () => {
+            try {
+                const data = await getTafsir(Number(number));
+                setTafsirData(data);
+             } catch (error){
+               console.error("Error fetching tafsir:", error);
+            }
+        };
+
+      const savedFavorites = localStorage.getItem('savedTafsir');
       if (savedFavorites) {
         try {
           const parsed = JSON.parse(savedFavorites);
-          const savedAyatObj = Array.isArray(parsed) ? parsed[parsed.length - 1] : parsed;
-          setSaveSurah(savedAyatObj);
+          const savedTafsirObj = Array.isArray(parsed) ? parsed[parsed.length - 1] : parsed;
+          setSaveSurah(savedTafsirObj);
 
           setActiveSaveSurah(true);
           
 
         } catch (error) {
-          console.error("Error parsing savedAyat:", error);
+          console.error("Error parsing savedTafsir:", error);
         }
       }
 
       fetchSurah();
+      fetchTafsir();
   }, [number]);
 
 
@@ -201,10 +212,10 @@ const SurahPage = () => {
             
             {Number(number) < 114 && (
               <button 
-                onClick={() => router.push(`/quranlist/surahquran/${Number(number) + 1}`)}
+                onClick={() => router.push(`/quranlist/tafsir/tafsirquran/${Number(number) + 1}`)}
                 className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-xl hover:shadow-md transition-all group"
               >
-                <span className="text-sm font-semibold">Surah Selanjutnya</span>
+                <span className="text-sm font-semibold">Selanjutnya</span>
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -308,6 +319,10 @@ const SurahPage = () => {
                <b>Artinya:</b> {ayatItem.teksIndonesia}
               </p>
 
+                <p className="text-base leading-relaxed text-slate-600 italic pt-4 ">
+               <b>Tafisr: </b> {tafsirData?.tafsir?.find((t: any) => t.ayat === ayatItem.nomorAyat)?.teks || 'Tafsir tidak tersedia'}
+              </p>
+
               {isPlaying && cureentIndex === ayatItem.nomorAyat - 1 && (
                 <div className="w-full mt-4 overflow-hidden">
                   <AudioQuran progress={progress} audioRef={audioRef as React.RefObject<HTMLAudioElement>} audioName={ayatItem.audio?.['05'] || ''} surah={bySurah.namaLatin}/>
@@ -322,7 +337,7 @@ const SurahPage = () => {
     <span 
       className="p-2 pl-8 text-green-600 font-semibold hover:underline flex items-center gap-2 group"
     >
-      Lanjutkan Membaca Surah {saveSurah.namaSurah} Ayat ke - {saveSurah.nomorAyat}
+      Lanjutkan Membaca Tafsir {saveSurah.namaSurah} Ayat ke - {saveSurah.nomorAyat}
       <svg 
         className="w-5 h-5 text-emerald-600 group-hover:translate-x-1 transition-transform" 
         fill="none" 

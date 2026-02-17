@@ -25,11 +25,9 @@ export interface TafsirDetail {
  deksripsi: string;
  audioFull: string;
   tafsir: {
-    _id: number;
-    surah: string;
     ayat: number;
-    tafsir: string;
-  }
+    teks: string;
+  }[];
 };
 
 
