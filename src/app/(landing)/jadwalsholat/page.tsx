@@ -18,7 +18,7 @@ const JadwalSholatPage = () => {
   const [notifEnabled, setNotifEnabled] = useState(false);
 
   const[getJadwalSholat, setGetJadwalSholat] =useState<jadwalSholat | null>(null);
-  const[Provinsi, setProvinsi] =useState<any | null>('-- Pilih Provinsi --');
+  const[Provinsi, setProvinsi] =useState<any | null>(null);
   const [getkab, setGetKab] = useState<string[]>([]);
 
   const [formDataSholat, setFormDataSholat] = useState<FormDataSholat>({
