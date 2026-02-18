@@ -26,12 +26,14 @@ export default function MenuHeader() {
               </svg>
               <span className={`text-xs ${parts[0] === 'jadwalsholat' ? 'text-white' : 'text-slate-700'}`}>Jadwal Sholat</span>
             </a>
-            <a href="" className={`flex flex-col items-center gap-2 p-2 ${parts[0] === 'jadwalimsak' ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-white'}  rounded-2xl shadow-md min-w-[100px] transition hover:scale-105 `}>
-              <svg className={`w-6 h-6  ${parts[0] === 'jadwalimsak' ? 'text-white' : 'text-slate-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            
+            <a href="/imsakiyah" className={`flex flex-col items-center gap-2 p-2 ${parts[0] === 'imsakiyah' ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-white'}  rounded-2xl shadow-md min-w-[100px] transition hover:scale-105 `}>
+              <svg className={`w-6 h-6  ${parts[0] === 'imsakiyah' ? 'text-white' : 'text-slate-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
-              <span className={`text-xs ${parts[0] === 'jadwalimsak' ? 'text-white' : 'text-slate-700'}`}>Imsak/Buka</span>
+              <span className={`text-xs ${parts[0] === 'imsakiyah' ? 'text-white' : 'text-slate-700'}`}>Imsak/Buka</span>
             </a>
+
             <a href="/doaharian" className={`flex flex-col items-center gap-2 p-2 ${parts[0] === 'doaharian' ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-white'}  rounded-2xl shadow-md min-w-[100px] transition hover:scale-105 `}>
               <svg className={`w-6 h-6  ${parts[0] === 'doaharian' ? 'text-white' : 'text-slate-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />

@@ -78,3 +78,27 @@ export interface FormDataSholat {
  provinsi: string, kabkota: string, bulan: number, tahun: number
 }
 
+export interface FormDataImsyakiyah {
+ provinsi: string, kabkota: string, tahun: number
+}
+
+export interface jadwalImsakiyah {
+
+  provinsi: string,
+  kabkota: string,
+  hijriah:  string,
+  masehi: number,
+  imsakiyah: {
+     tanggal: number,
+    imsak: string,
+    subuh: string,
+    terbit: string,
+    dhuha: string,
+    dzuhur: string,
+    ashar: string,
+    maghrib: string,
+    isya: string
+  }[],
+  
+};
+

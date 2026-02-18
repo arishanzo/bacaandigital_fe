@@ -4,11 +4,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Header } from '../layouts/header';
 import MenuHeader from '../components/menuheader/menuheader';
-import { FormDataSholat, jadwalSholat } from '@/app/types';
-import { getProvinsi, postJadwalSholat, postKabKota } from '@/app/services/jadwalshoat.services';
+import { FormDataImsyakiyah, jadwalImsakiyah } from '@/app/types';
+import { getProvinsi, postJadwalImsakiyah, postKabKota } from '@/app/services/jadwalimsyakiyah.services';
 import html2canvas from 'html2canvas';
 
-const JadwalSholatPage = () => {
+const JadwalImsakiyahPage = () => {
   const captureRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -17,14 +17,13 @@ const JadwalSholatPage = () => {
   const [selectedProvince, setSelectedProvince] = useState('Jawa Timur');
   const [notifEnabled, setNotifEnabled] = useState(false);
 
-  const[getJadwalSholat, setGetJadwalSholat] =useState<jadwalSholat | null>(null);
+  const[getJadwalImsakiyah, setGetJadwalImsakiyah] =useState<jadwalImsakiyah | null>(null);
   const[Provinsi, setProvinsi] =useState<any | null>(null);
   const [getkab, setGetKab] = useState<string[]>([]);
 
-  const [formDataSholat, setFormDataSholat] = useState<FormDataSholat>({
+  const [formDataImsakiyah, setFormDataImsakiyah] = useState<FormDataImsyakiyah>({
     provinsi: selectedProvince, 
-            kabkota:  selectedCity, 
-            bulan: currentDate.getMonth() + 1, 
+            kabkota:  selectedCity,
             tahun: currentDate.getFullYear()
      });
 
@@ -38,7 +37,7 @@ const JadwalSholatPage = () => {
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=id`,
               {
                 headers: {
-                  'User-Agent': 'JadwalSholatApp/1.0'
+                  'User-Agent': 'JadwalImsakiyahApp/1.0'
                 }
               }
             );
@@ -64,10 +63,10 @@ const JadwalSholatPage = () => {
     
        
 
-          const fetchJadwalSholat = async () => {
+          const fetchJadwalImsakiyah = async () => {
               try {
-                  const data = await postJadwalSholat(formDataSholat);
-                  setGetJadwalSholat(data);
+                  const data = await postJadwalImsakiyah(formDataImsakiyah);
+                  setGetJadwalImsakiyah(data);
                } catch (error){
                  console.error("Error fetching surahs:", error);
               }
@@ -94,14 +93,14 @@ const JadwalSholatPage = () => {
           
         fetchKab();
         fetchGetProvinsi();
-        fetchJadwalSholat();
+        fetchJadwalImsakiyah();
     }, []);
 
 
   const handleShare = () => {
     const url = window.location.href;
     if (navigator.share) {
-      navigator.share({ title: 'Jadwal Sholat', url });
+      navigator.share({ title: 'Jadwal Imsakiyah', url });
     } else {
       navigator.clipboard.writeText(url);
       alert('Link berhasil disalin!');
@@ -122,7 +121,7 @@ const JadwalSholatPage = () => {
   });
 
   const link = document.createElement('a');
-  link.download = `jadwal-sholat-${selectedCity}.png`;
+  link.download = `jadwal-Imsakiyah-${selectedCity}.png`;
   link.href = canvas.toDataURL('image/png');
   link.click();
 };
@@ -135,11 +134,11 @@ const handleKab = async (value: string) => {
     tahun: currentDate.getFullYear(),
   };
 
-  setFormDataSholat(newFormData);
+  setFormDataImsakiyah(newFormData);
 
    try {
-    const data = await postJadwalSholat(formDataSholat);
-    setGetJadwalSholat(data); 
+    const data = await postJadwalImsakiyah(formDataImsakiyah);
+    setGetJadwalImsakiyah(data); 
     setSelectedCity(value);
   } catch (error) {
     console.error("Error fetching kab/kota:", error);
@@ -160,9 +159,8 @@ const handleProvinsi = async (value: string) => {
 
   const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-  const curentJadwalSholat = getJadwalSholat?.jadwal.filter(item => new Date(item.tanggal_lengkap).getDate() === currentDate.getDate());
-   const savedAyatObj = Array.isArray(curentJadwalSholat) ? curentJadwalSholat[curentJadwalSholat.length - 1] : curentJadwalSholat;
-
+  const curentJadwalImsakiyah = getJadwalImsakiyah?.imsakiyah.filter(item =>  Number(item.tanggal) === currentDate.getDate());
+   const savedAyatObj = Array.isArray(curentJadwalImsakiyah) ? curentJadwalImsakiyah[curentJadwalImsakiyah.length - 1] : curentJadwalImsakiyah;
 
     
 
@@ -183,10 +181,10 @@ const handleProvinsi = async (value: string) => {
               <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2L10 6H14L12 2M6 6C6 7.11 5.11 8 4 8V18H2V20H22V18H20V8C18.9 8 18 7.11 18 6L15 6.5V8H9V6.5L6 6M6 8H8V18H6V8M10 8H14V18H10V8M16 8H18V18H16V8Z"/>
               </svg>
-              <h1 className="md:text-5xl text-3xl font-bold">Jadwal Sholat</h1>
+              <h1 className="md:text-5xl text-3xl font-bold">Jadwal Imsakiyah</h1>
             </div>
             <p className="text-emerald-50 md:text-lg text-sm  mb-8">
-              {months[currentDate.getMonth()]} {currentDate.getFullYear()} • {selectedCity}, {selectedProvince}
+              {getJadwalImsakiyah?.hijriah} Hijriah / {getJadwalImsakiyah?.masehi} Masehi • {selectedCity}, {selectedProvince}
             </p>
             <div className="flex gap-2 justify-center">
                       <button
@@ -230,16 +228,13 @@ const handleProvinsi = async (value: string) => {
             <svg className="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2L10 6H14L12 2M6 6C6 7.11 5.11 8 4 8V18H2V20H22V18H20V8C18.9 8 18 7.11 18 6L15 6.5V8H9V6.5L6 6M6 8H8V18H6V8M10 8H14V18H10V8M16 8H18V18H16V8Z"/>
             </svg>
-            Waktu Sholat Hari Ini
+            Waktu Imsakiyah Hari Ini
           </h2>
           <div className="grid grid-cols-3 gap-4">
             {[
+              {name: 'Imsyak', time: savedAyatObj?.imsak, icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' },
               { name: 'Subuh', time: savedAyatObj?.subuh, icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' },
-               { name: 'Dhuha', time: savedAyatObj?.dhuha, icon: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
-              { name: 'Dzuhur', time: savedAyatObj?.dzuhur, icon: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
-              { name: 'Ashar', time: savedAyatObj?.ashar, icon: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
               { name: 'Maghrib', time: savedAyatObj?.maghrib, icon: 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' },
-              { name: 'Isya', time: savedAyatObj?.isya, icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' }
             ].map((prayer, idx) => (
               <div key={idx} className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl md:p-4 p-2 text-center hover:shadow-md transition-shadow">
                 <svg className="md:w-8 md:h-8 w-5 h-5 mx-auto mb-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -307,7 +302,7 @@ const handleProvinsi = async (value: string) => {
 
         
              
-         <div ref={captureRef} className='md:p-8 p-2'>
+         <div ref={captureRef} className=' p-2'>
   
   {/* Header Section */}
   <div
@@ -328,7 +323,7 @@ const handleProvinsi = async (value: string) => {
     ></div>
 
     {/* Content */}
-    <div className="relative md:mt-8 text-center text-white">
+    <div className="relative text-center text-white">
       <div className="flex flex-col items-center justify-center gap-2 mb-3">
         
         <div className="flex items-center gap-3 mt-4">
@@ -338,8 +333,8 @@ const handleProvinsi = async (value: string) => {
           </h2>
         </div>
 
-        <h1 className="md:text-4xl text-2xl font-bold text-white">
-          Jadwal Sholat Kab/Kota {selectedCity}
+        <h1 className="md:text-4xl text-lg font-bold text-white">
+          Jadwal Imsakiyah {selectedCity}
         </h1>
       </div>
 
@@ -347,7 +342,7 @@ const handleProvinsi = async (value: string) => {
         className="md:text-lg text-sm mb-8"
         style={{ color: "#d1fae5" }}
       >
-        {months[currentDate.getMonth()]} {currentDate.getFullYear()} •{" "}
+        {getJadwalImsakiyah?.hijriah} H / {getJadwalImsakiyah?.masehi} M •{" "}
         {selectedCity}, {selectedProvince}
       </p>
     </div>
@@ -374,29 +369,22 @@ const handleProvinsi = async (value: string) => {
               color: "#ffffff"
             }}
           >
-            <th className="mb-1 p-2 text-center font-semibold">Tanggal</th>
-            <th className="mb-1 p-2 text-center font-semibold">Subuh</th>
-            <th className="mb-1 p-2 text-center font-semibold">Dhuha</th>
-            <th className="mb-1 p-2 text-center font-semibold">Dzuhur</th>
-            <th className="mb-1 p-2 text-center font-semibold">Ashar</th>
+            <th className="mb-1 p-2 text-center font-semibold">Tgl</th>
+            <th className="mb-1 p-2 text-center font-semibold">Imsyak</th>
+            <th className="mb-1 p-2 text-center font-semibold">Shubuh</th>
+            <th className="mb-1 p-2 text-center font-semibold">Terbit</th>
             <th className="mb-1 p-2 text-center font-semibold">Maghrib</th>
-            <th className="mb-1 p-2 text-center font-semibold">Isya</th>
           </tr>
         </thead>
 
         <tbody>
-          {getJadwalSholat?.jadwal?.map((jadwal, index) => {
-            const isToday =
-              new Date(jadwal.tanggal_lengkap).getDate() ===
-              currentDate.getDate();
+          {getJadwalImsakiyah?.imsakiyah?.map((jadwal, index) => {
+          
 
             return (
               <tr
                 key={index}
-                style={{
-                  borderBottom: "1px solid #f3f4f6",
-                  backgroundColor: isToday ? "#d1fae5" : "#ffffff"
-                }}
+              
               >
                 <td
                   className="mb-1 py-1 text-center font-semibold"
@@ -405,24 +393,19 @@ const handleProvinsi = async (value: string) => {
                   {jadwal.tanggal}
                 </td>
 
+                <td className="mb-1 p-2 text-center" style={{ color: "#374151" , background: "#f4ffe0"}}>
+                  {jadwal.imsak}
+                </td>
                 <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
                   {jadwal.subuh}
                 </td>
                 <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
-                  {jadwal.dhuha}
+                  {jadwal.terbit}
                 </td>
-                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
-                  {jadwal.dzuhur}
-                </td>
-                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
-                  {jadwal.ashar}
-                </td>
-                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
+                <td className="mb-1 p-2 text-center" style={{ color: "#374151" , background: "#f4ffe0"}}>
                   {jadwal.maghrib}
                 </td>
-                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
-                  {jadwal.isya}
-                </td>
+              
               </tr>
             );
           })}
@@ -430,16 +413,18 @@ const handleProvinsi = async (value: string) => {
       </table>
     </div>
   </div>
+
+     {/* Info Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-sm">Sumber data: <a className=' text-extrabold' href='https://bimasislam.kemenag.go.id/web/'>Bimas Islam Kementerian Agama RI</a> </p>
+        </div>
 </div>
 
 
-        {/* Info Footer */}
-        <div className="mt-8 text-center text-gray-600">
-          <p className="text-sm">Jadwal sholat dapat berbeda beberapa menit tergantung lokasi Anda</p>
-        </div>
+     
       </div>
     </div>
   );
 }
 
-export default JadwalSholatPage;
+export default JadwalImsakiyahPage;
