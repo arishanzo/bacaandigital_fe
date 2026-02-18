@@ -59,7 +59,7 @@ const QuranIndex = () => {
         <div className="mb-8 flex items-center gap-4">
 
            <div className="flex-1 overflow-x-auto scrollbar-hide">
-            <div className="flex py-4 gap-3 min-w-max px-1">
+            <div className="flex py-2 gap-3 min-w-max px-1">
                 <a href="/quranlist" className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full font-semibold text-sm shadow-md transition">
                 Surah
               </a>
