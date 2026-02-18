@@ -292,7 +292,7 @@ const handleProvinsi = async (value: string) => {
                   className="w-full px-4 py-3 bg-white border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none transition-all appearance-none cursor-pointer hover:border-emerald-300"
                 >
                 {
-                getkab.length > 0 ? getkab?.map((item: any, idx: number) => (
+                getkab?.length > 0 ? getkab?.map((item: any, idx: number) => (
                       <option key={idx}>{item}</option>
                 )
               ): (

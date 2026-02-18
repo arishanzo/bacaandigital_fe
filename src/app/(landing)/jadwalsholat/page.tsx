@@ -298,7 +298,7 @@ const handleProvinsi = async (value: string) => {
                 >
                    
                 {
-                getkab.length > 0 ? getkab?.map((item: any, idx: number) => (
+                getkab?.length > 0 ? getkab?.map((item: any, idx: number) => (
                       <option key={idx}>{item}</option>
                 )
               ): (
