@@ -33,7 +33,7 @@ const QuranIndex = () => {
     }
 
     fetchSurahs();
-  }, []);
+  }, [surahs]);
 
   const toggleFavorite = (e: React.MouseEvent, surahId: number) => {
     e.preventDefault();
@@ -135,7 +135,7 @@ const QuranIndex = () => {
         
 
         {/* Grid Surah */}
-        {!surahs?.length ? (
+        {!surahs ? (
     // Skeleton Loading
     Array.from({ length: 6 }).map((_, index) => (
       <div
