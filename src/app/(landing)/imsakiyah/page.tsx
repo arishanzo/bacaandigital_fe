@@ -230,6 +230,20 @@ const handleProvinsi = async (value: string) => {
             </svg>
             Waktu Imsakiyah Hari Ini
           </h2>
+            {!savedAyatObj ? (
+    <div className="grid grid-cols-3 gap-4">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          className="rounded-xl p-4 bg-slate-100 animate-pulse text-center"
+        >
+          <div className="w-8 h-8 bg-slate-300 rounded-full mx-auto mb-3"></div>
+          <div className="h-4 bg-slate-300 rounded w-2/3 mx-auto mb-2"></div>
+          <div className="h-6 bg-slate-300 rounded w-1/2 mx-auto"></div>
+        </div>
+      ))}
+    </div>
+  ) : (
           <div className="grid grid-cols-3 gap-4">
             {[
               {name: 'Imsyak', time: savedAyatObj?.imsak, icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' },
@@ -245,9 +259,9 @@ const handleProvinsi = async (value: string) => {
               </div>
             ))}
           </div>
+  )}
         </div>
-
-
+       
         {/* Filter Section */}
         <div className="bg-gradient-to-br from-white to-emerald-50/30 rounded-2xl shadow-lg p-6 mb-8 border border-emerald-100">
           <div className="flex items-center gap-2 mb-4">
@@ -257,6 +271,19 @@ const handleProvinsi = async (value: string) => {
             </svg>
             <h3 className="text-lg font-bold text-gray-800">Pilih Lokasi Lain</h3>
           </div>
+
+          {!selectedCity && !selectedProvince ? (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-pulse">
+    <div className="space-y-2">
+      <div className="h-4 w-24 bg-slate-300 rounded"></div>
+      <div className="h-12 bg-slate-200 rounded-xl"></div>
+    </div>
+    <div className="space-y-2">
+      <div className="h-4 w-24 bg-slate-300 rounded"></div>
+      <div className="h-12 bg-slate-200 rounded-xl"></div>
+    </div>
+  </div>
+) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
               <label className="block text-xs font-semibold text-emerald-600 mb-2 uppercase tracking-wide">Provinsi</label>
@@ -298,6 +325,8 @@ const handleProvinsi = async (value: string) => {
               </div>
             </div>
           </div>
+          
+)}
         </div>
 
         
@@ -378,7 +407,19 @@ const handleProvinsi = async (value: string) => {
         </thead>
 
         <tbody>
-          {getJadwalImsakiyah?.imsakiyah?.map((jadwal, index) => {
+
+           {!getJadwalImsakiyah ? (
+    Array.from({ length: 8 }).map((_, i) => (
+      <tr key={i} className="animate-pulse border-b">
+        {Array.from({ length: 7 }).map((__, j) => (
+          <td key={j} className="p-3 text-center">
+            <div className="h-4 bg-slate-200 rounded w-8 mx-auto"></div>
+          </td>
+        ))}
+      </tr>
+    ))
+  ) : (
+        getJadwalImsakiyah?.imsakiyah?.map((jadwal, index) => {
           
 
             return (
@@ -408,7 +449,10 @@ const handleProvinsi = async (value: string) => {
               
               </tr>
             );
-          })}
+            
+          })
+
+        )}
         </tbody>
       </table>
     </div>
