@@ -15,7 +15,7 @@ const SurahPage = () => {
     const router = useRouter();
 
 
-    const [bySurah, setBySurah] = useState<ayatDetail | null>(null);
+    const [bySurah, setBySurah] = useState<any | null>(null);
     const [displayText, setDisplayText] = useState("");
 
     const [saveSurah, setSaveSurah] = useState<any | null>(null);
@@ -235,7 +235,7 @@ const SurahPage = () => {
           )}
 
           {/* Ayat List */}
-          {bySurah?.ayat?.map((ayatItem) => (
+          {bySurah?.ayat?.map((ayatItem: any) => (
             <div 
             id={`ayat-${ayatItem.nomorAyat}`}
             key={ayatItem.nomorAyat}
