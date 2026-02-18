@@ -18,8 +18,8 @@ const JadwalSholatPage = () => {
   const [notifEnabled, setNotifEnabled] = useState(false);
 
   const[getJadwalSholat, setGetJadwalSholat] =useState<jadwalSholat | null>(null);
-  const[Provinsi, setProvinsi] =useState<any | null>(null);
-  const [getkab, setGetKab] = useState<string[]>([]);
+  const[Provinsi, setProvinsi] =useState<any | null>('-- Pilih Provinsi --');
+  const [getkab, setGetKab] = useState<string[]>(['-- Pilih Kab/Kota --']);
 
   const [formDataSholat, setFormDataSholat] = useState<FormDataSholat>({
     provinsi: selectedProvince, 
@@ -374,7 +374,7 @@ const handleProvinsi = async (value: string) => {
               color: "#ffffff"
             }}
           >
-            <th className="mb-1 p-2 text-center font-semibold">Tanggal</th>
+            <th className="mb-1 p-2 text-center font-semibold">Tgl</th>
             <th className="mb-1 p-2 text-center font-semibold">Subuh</th>
             <th className="mb-1 p-2 text-center font-semibold">Dhuha</th>
             <th className="mb-1 p-2 text-center font-semibold">Dzuhur</th>
