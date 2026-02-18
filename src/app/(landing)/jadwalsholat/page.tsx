@@ -19,7 +19,7 @@ const JadwalSholatPage = () => {
 
   const[getJadwalSholat, setGetJadwalSholat] =useState<jadwalSholat | null>(null);
   const[Provinsi, setProvinsi] =useState<any | null>('-- Pilih Provinsi --');
-  const [getkab, setGetKab] = useState<string[]>(['-- Pilih Kab/Kota --']);
+  const [getkab, setGetKab] = useState<string[]>(['']);
 
   const [formDataSholat, setFormDataSholat] = useState<FormDataSholat>({
     provinsi: selectedProvince, 
@@ -272,10 +272,15 @@ const handleProvinsi = async (value: string) => {
                   className="w-full px-4 py-3 bg-white border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none transition-all appearance-none cursor-pointer hover:border-emerald-300"
                 >
                     
-                   <option value='' disabled>-- Pilih Provinsi --</option>
-                    {Provinsi?.map((item: any, idx: number) => (
+                
+                    { Provinsi ? Provinsi?.map((item: any, idx: number) => (
                          <option key={idx}>{item}</option>
-                    ) )}
+                    )
+                  ):(
+                      <option value='' disabled>-- Pilih Provinsi --</option>
+                  )
+                  
+                  }
                  
                 </select>
                 <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -291,10 +296,16 @@ const handleProvinsi = async (value: string) => {
                   onChange={(e) =>  handleKab(e.target.value)}
                   className="w-full px-4 py-3 bg-white border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none transition-all appearance-none cursor-pointer hover:border-emerald-300"
                 >
-                   <option value='' disabled>-- Pilih Kabupaten / Kota --</option>
-                {getkab?.map((item: any, idx: number) => (
+                   
+                {
+                getkab.length > 0 ? getkab?.map((item: any, idx: number) => (
                       <option key={idx}>{item}</option>
-                ))}
+                )
+              ): (
+                   <option value='' disabled>-- Pilih Kabupaten / Kota --</option>
+                )
+              }
+             
                  
                 </select>
                 <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
