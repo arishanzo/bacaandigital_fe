@@ -14,11 +14,11 @@ export default function MenuHeader() {
     {/* Menu Icon Geser */}
         <div className="mb-12 overflow-x-scroll scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
           <div className="flex gap-4 px-1 p-2 lg:justify-center">
-            <a href="/quranlist" className={`flex flex-col items-center gap-2 p-2 ${parts[0] === 'quranlist' ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-white'}  rounded-2xl shadow-sm min-w-[100px] transition hover:scale-105 `}>
-              <svg className={`w-6 h-6  ${parts[0] === 'quranlist' ? 'text-white' : 'text-slate-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="/quranlist" className={`flex flex-col items-center gap-2 p-2 ${parts[0] === 'quranlist' ||  !parts[0] ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-white'}  rounded-2xl shadow-sm min-w-[100px] transition hover:scale-105 `}>
+              <svg className={`w-6 h-6  ${parts[0] === 'quranlist'  ||  !parts[0]  ? 'text-white' : 'text-slate-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
-              <span className={`text-xs ${parts[0] === 'quranlist' ? 'text-white' : 'text-slate-700'}`}>Al-Qur'an</span>
+              <span className={`text-xs ${parts[0] === 'quranlist' ||  !parts[0]  ? 'text-white' : 'text-slate-700'}`}>Al-Qur'an</span>
             </a>
             <a href="/jadwalsholat" className={`flex flex-col items-center gap-2 p-2 ${parts[0] === 'jadwalsholat' ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-white'}  rounded-2xl shadow-md min-w-[100px] transition hover:scale-105 `}>
               <svg className={`w-6 h-6  ${parts[0] === 'jadwalsholat' ? 'text-white' : 'text-slate-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">

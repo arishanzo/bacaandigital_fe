@@ -1,13 +1,17 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Header } from '../layouts/header';
 import MenuHeader from '../components/menuheader/menuheader';
 import { FormDataSholat, jadwalSholat } from '@/app/types';
 import { getProvinsi, postJadwalSholat, postKabKota } from '@/app/services/jadwalshoat.services';
+import html2canvas from 'html2canvas';
 
 const JadwalSholatPage = () => {
+  const captureRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedCity, setSelectedCity] = useState('Kab. Lamongan');
   const [selectedProvince, setSelectedProvince] = useState('Jawa Timur');
@@ -106,22 +110,25 @@ const JadwalSholatPage = () => {
       alert('Link berhasil disalin!');
     }
   };
+  const handleDownloadImage =  async () => {
+   if (!captureRef.current) return;
 
-  const handleNotification = () => {
-    if ('Notification' in window) {
-      if (Notification.permission === 'granted') {
-        setNotifEnabled(!notifEnabled);
-        alert(notifEnabled ? 'Notifikasi dinonaktifkan' : 'Notifikasi diaktifkan');
-      } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            setNotifEnabled(true);
-            alert('Notifikasi diaktifkan');
-          }
-        });
-      }
-    }
-  };
+  const element = captureRef.current;
+
+  const canvas = await html2canvas(element, {
+    scale: 2,
+    useCORS: true,
+    scrollX: 0,
+    scrollY: -window.scrollY,
+    windowWidth: element.scrollWidth,
+    windowHeight: element.scrollHeight,
+  });
+
+  const link = document.createElement('a');
+  link.download = `jadwal-sholat-${selectedCity}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+};
 
 const handleKab = async (value: string) => {
   const newFormData = {
@@ -156,14 +163,13 @@ const handleProvinsi = async (value: string) => {
   }
 };
 
-
-
   const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-  
 
   const curentJadwalSholat = getJadwalSholat?.jadwal.filter(item => new Date(item.tanggal_lengkap).getDate() === currentDate.getDate());
-     const savedAyatObj = Array.isArray(curentJadwalSholat) ? curentJadwalSholat[curentJadwalSholat.length - 1] : curentJadwalSholat;
+   const savedAyatObj = Array.isArray(curentJadwalSholat) ? curentJadwalSholat[curentJadwalSholat.length - 1] : curentJadwalSholat;
 
+
+    
 
   return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-50">
@@ -188,15 +194,28 @@ const handleProvinsi = async (value: string) => {
               {months[currentDate.getMonth()]} {currentDate.getFullYear()} • {selectedCity}, {selectedProvince}
             </p>
             <div className="flex gap-2 justify-center">
-              <button 
-                onClick={handleNotification}
-                className="bg-white/20 backdrop-blur-lg rounded-xl px-6 py-2 hover:bg-white/30 transition-all inline-flex items-center gap-2 border border-white/30"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                <span className="md:text-sm  text-xs font-semibold">{notifEnabled ? 'Aktif' : 'Notifikasi'}</span>
-              </button>
+                      <button
+            onClick={handleDownloadImage}
+            className="bg-white/20 backdrop-blur-lg rounded-xl px-6 py-2 hover:bg-white/30 transition-all inline-flex items-center gap-2 border border-white/30"
+          >
+            {/* Ikon Download */}
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"
+              />
+            </svg>
+            <span className="md:text-sm text-xs font-semibold">
+              Unduh Gambar
+            </span>
+          </button>
               <button 
                 onClick={handleShare}
                 className="bg-white/20 backdrop-blur-lg rounded-xl px-6 py-2 hover:bg-white/30 transition-all inline-flex items-center gap-2 border border-white/30"
@@ -292,44 +311,133 @@ const handleProvinsi = async (value: string) => {
           </div>
         </div>
 
-        {/* Table Section */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="overflow-x-scroll scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white">
-                  <th className="px-6 py-4 text-left font-semibold">Tanggal</th>
-                  <th className="px-6 py-4 text-center font-semibold">Subuh</th>
-                  <th className="px-6 py-4 text-center font-semibold">Dhuha</th>
-                  <th className="px-6 py-4 text-center font-semibold">Dzuhur</th>
-                  <th className="px-6 py-4 text-center font-semibold">Ashar</th>
-                  <th className="px-6 py-4 text-center font-semibold">Maghrib</th>
-                  <th className="px-6 py-4 text-center font-semibold">Isya</th>
-                </tr>
-              </thead>
-              <tbody>
-                {getJadwalSholat?.jadwal?.map((jadwal, index) => (
-                  <tr 
-                    key={index}
-                    className={`border-b border-gray-100 hover:bg-emerald-50 transition-colors ${
-                     new Date(jadwal.tanggal_lengkap).getDate() === currentDate.getDate() ? 'bg-emerald-100' : ''
-                    }`}
-                  >
-                    <td className="px-6 py-2 text-center font-semibold text-gray-800">
-                      {jadwal.tanggal}
-                    </td>
-                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.subuh}</td>
-                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.dhuha}</td>
-                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.dzuhur}</td>
-                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.ashar}</td>
-                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.maghrib}</td>
-                    <td className="px-6 py-4 text-center text-gray-700">{jadwal.isya}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        
+             
+         <div ref={captureRef} className='md:p-8 p-2'>
+  
+  {/* Header Section */}
+  <div
+    className="relative rounded-3xl shadow-xl overflow-hidden mb-8"
+    style={{
+      background: "linear-gradient(to right, #059669, #14b8a6)"
+    }}
+  >
+    {/* Decorative Orbs */}
+    <div
+      className="absolute top-0 right-0 w-64 h-64 rounded-full -mr-32 -mt-32"
+      style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
+    ></div>
+
+    <div
+      className="absolute bottom-0 left-0 w-48 h-48 rounded-full -ml-24 -mb-24"
+      style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
+    ></div>
+
+    {/* Content */}
+    <div className="relative md:mt-8 text-center text-white">
+      <div className="flex flex-col items-center justify-center gap-2 mb-3">
+        
+        <div className="flex items-center gap-3 mt-4">
+
+          <h2 className="text-sm font-bold tracking-tight text-white">
+            Badi Islamic
+          </h2>
         </div>
+
+        <h1 className="md:text-4xl text-2xl font-bold text-white">
+          Jadwal Sholat Kab/Kota {selectedCity}
+        </h1>
+      </div>
+
+      <p
+        className="md:text-lg text-sm mb-8"
+        style={{ color: "#d1fae5" }}
+      >
+        {months[currentDate.getMonth()]} {currentDate.getFullYear()} •{" "}
+        {selectedCity}, {selectedProvince}
+      </p>
+    </div>
+  </div>
+
+  {/* Table Section */}
+  <div
+    className="rounded-2xl shadow-lg overflow-hidden"
+    style={{ backgroundColor: "#ffffff" }}
+  >
+    <div
+      ref={scrollRef}
+      className="overflow-x-scroll scrollbar-hide"
+      style={{
+        scrollbarWidth: "none",
+        msOverflowStyle: "none"
+      }}
+    >
+      <table className="w-full">
+        <thead>
+          <tr
+            style={{
+              background: "linear-gradient(to right, #059669, #14b8a6)",
+              color: "#ffffff"
+            }}
+          >
+            <th className="mb-1 p-2 text-center font-semibold">Tanggal</th>
+            <th className="mb-1 p-2 text-center font-semibold">Subuh</th>
+            <th className="mb-1 p-2 text-center font-semibold">Dhuha</th>
+            <th className="mb-1 p-2 text-center font-semibold">Dzuhur</th>
+            <th className="mb-1 p-2 text-center font-semibold">Ashar</th>
+            <th className="mb-1 p-2 text-center font-semibold">Maghrib</th>
+            <th className="mb-1 p-2 text-center font-semibold">Isya</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {getJadwalSholat?.jadwal?.map((jadwal, index) => {
+            const isToday =
+              new Date(jadwal.tanggal_lengkap).getDate() ===
+              currentDate.getDate();
+
+            return (
+              <tr
+                key={index}
+                style={{
+                  borderBottom: "1px solid #f3f4f6",
+                  backgroundColor: isToday ? "#d1fae5" : "#ffffff"
+                }}
+              >
+                <td
+                  className="mb-1 py-1 text-center font-semibold"
+                  style={{ color: "#1f2937" }}
+                >
+                  {jadwal.tanggal}
+                </td>
+
+                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
+                  {jadwal.subuh}
+                </td>
+                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
+                  {jadwal.dhuha}
+                </td>
+                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
+                  {jadwal.dzuhur}
+                </td>
+                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
+                  {jadwal.ashar}
+                </td>
+                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
+                  {jadwal.maghrib}
+                </td>
+                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
+                  {jadwal.isya}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 
         {/* Info Footer */}
         <div className="mt-8 text-center text-gray-600">
