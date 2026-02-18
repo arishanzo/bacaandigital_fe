@@ -140,7 +140,7 @@ const QuranIndex = () => {
     Array.from({ length: 6 }).map((_, index) => (
       <div
         key={index}
-        className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 animate-pulse"
+        className="bg-white rounded-2xl p-5 mb-2 shadow-sm border border-slate-200 animate-pulse"
       >
         <div className="flex justify-between">
           <div className="space-y-3 w-full">
@@ -194,7 +194,7 @@ const QuranIndex = () => {
           ))}
         </div>
           )}
-          
+
       </div> 
     </div>
   );
