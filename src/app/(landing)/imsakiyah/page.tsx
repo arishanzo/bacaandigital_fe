@@ -18,7 +18,7 @@ const JadwalImsakiyahPage = () => {
   const [notifEnabled, setNotifEnabled] = useState(false);
 
   const[getJadwalImsakiyah, setGetJadwalImsakiyah] =useState<jadwalImsakiyah | null>(null);
-  const[Provinsi, setProvinsi] =useState<any | null>('-- Pilih Provinsi --');
+  const[Provinsi, setProvinsi] =useState<any | null>(null);
   const [getkab, setGetKab] = useState<string[]>([]);
 
   const [formDataImsakiyah, setFormDataImsakiyah] = useState<FormDataImsyakiyah>({
