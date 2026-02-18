@@ -272,7 +272,7 @@ const handleProvinsi = async (value: string) => {
             <h3 className="text-lg font-bold text-gray-800">Pilih Lokasi Lain</h3>
           </div>
 
-          {!selectedCity && !selectedProvince ? (
+          {!getJadwalImsakiyah ? (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-pulse">
     <div className="space-y-2">
       <div className="h-4 w-24 bg-slate-300 rounded"></div>
