@@ -135,7 +135,7 @@ const QuranIndex = () => {
         
 
         {/* Grid Surah */}
-        {!surahs?.length ? (
+        {!surahs ? (
     // Skeleton Loading
     Array.from({ length: 6 }).map((_, index) => (
       <div
