@@ -27,6 +27,15 @@ const pathname = usePathname();
       }
    };
 
+   const handleTafsir = (nomorAyat: number) => {
+     if(nomorAyat) {
+        router.push(`/quranlist/tafsir/tafsirquran/${savedSurah?.nomorSurah}#ayat-${nomorAyat}`);
+      } else {
+        router.push(`/quranlist/tafsir/tafsirquran/1`);
+      }
+   
+   }
+
     return (
 <>
     {parts[1] !== 'tafsir' ? (
@@ -37,7 +46,7 @@ const pathname = usePathname();
             <div className="relative flex items-center justify-between">
               <div className="text-white">
                 <h2 className="md:text-2xl text-xl font-bold mb-2">
-                    {savedSurah ? 'Lanjutkan Membaca' : 'Mulai Baca Tafsir Al-Quran'}
+                    {savedSurah ? 'Lanjutkan Membaca' : 'Mulai Baca Al-Quran'}
                 </h2>
                 <p className="text-sm  text-emerald-50 mb-4">
                     {savedSurah ? `Surah ${savedSurah?.namaSurah} Ayat ke ${savedSurah.nomorAyat}` : 'Bacalah Al-Quran dengan tartil'}
@@ -71,7 +80,7 @@ const pathname = usePathname();
                     {savedSurah ? `Tafsir Surah ${savedSurah?.namaSurah} Ayat ke ${savedSurah.nomorAyat}` : 'Tafsir Alquran untuk memahami makna yang lebih dalam'}
                 </p>
                 <button 
-                onClick={(e) => handleSurah(savedSurah?.nomorAyat)}
+                onClick={(e) => handleTafsir(savedSurah?.nomorAyat)}
                 className="cursor-pointer inline-flex items-center gap-2 bg-white text-emerald-600 px-4 py-2 rounded-xl font-semibold text-sm hover:bg-emerald-50 transition">
                   <span>{savedSurah ? 'Lanjutkan' : 'Mulai Baca'}</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
