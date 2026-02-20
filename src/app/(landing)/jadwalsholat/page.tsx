@@ -418,8 +418,8 @@ const handleProvinsi = async (value: string) => {
           </tr>
         </thead>
 
-        <tbody>
-                 {!getJadwalSholat ? (
+    <tbody>
+  { !getJadwalSholat ? (
     Array.from({ length: 8 }).map((_, i) => (
       <tr key={i} className="animate-pulse border-b">
         {Array.from({ length: 7 }).map((__, j) => (
@@ -429,50 +429,33 @@ const handleProvinsi = async (value: string) => {
         ))}
       </tr>
     ))
-  ) : ( getJadwalSholat?.jadwal?.map((jadwal, index) => {
-            const isToday =
-              new Date(jadwal.tanggal_lengkap).getDate() ===
-              currentDate.getDate();
+  ) : (
+    getJadwalSholat.jadwal.map((jadwal, index) => {
+      const isToday =
+        new Date(jadwal.tanggal_lengkap).getDate() === currentDate.getDate();
 
-            return (
-              <tr
-                key={index}
-                style={{
-                  borderBottom: "1px solid #f3f4f6",
-                  backgroundColor: isToday ? "#d1fae5" : "#ffffff"
-                }}
-              >
-                <td
-                  className="mb-1 py-1 text-center font-semibold"
-                  style={{ color: "#1f2937" }}
-                >
-                  {jadwal.tanggal}
-                </td>
-
-                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
-                  {jadwal.subuh}
-                </td>
-                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
-                  {jadwal.dhuha}
-                </td>
-                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
-                  {jadwal.dzuhur}
-                </td>
-                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
-                  {jadwal.ashar}
-                </td>
-                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
-                  {jadwal.maghrib}
-                </td>
-                <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>
-                  {jadwal.isya}
-                </td>
-              </tr>
-            );
-          })
-        )};
-
-        </tbody>
+      return (
+        <tr
+          key={index}
+          style={{
+            borderBottom: "1px solid #f3f4f6",
+            backgroundColor: isToday ? "#d1fae5" : "#ffffff"
+          }}
+        >
+          <td className="mb-1 py-1 text-center font-semibold" style={{ color: "#1f2937" }}>
+            {jadwal.tanggal}
+          </td>
+          <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>{jadwal.subuh}</td>
+          <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>{jadwal.dhuha}</td>
+          <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>{jadwal.dzuhur}</td>
+          <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>{jadwal.ashar}</td>
+          <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>{jadwal.maghrib}</td>
+          <td className="mb-1 p-2 text-center" style={{ color: "#374151" }}>{jadwal.isya}</td>
+        </tr>
+      );
+    })
+  )}
+</tbody>
       </table>
     </div>
   </div>
